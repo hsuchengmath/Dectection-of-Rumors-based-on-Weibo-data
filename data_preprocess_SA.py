@@ -16,7 +16,7 @@ corpus_path = '/Users/hsucheng/Documents/LAB/fake_news_project/dataset/Senta/dat
 
 
 class Data_PreProcess_SA:  
-     
+
     def __init__(self,partition_num,time_inteval,Weibo_path,corpus_path):
         self.partition_num = partition_num
         self.time_inteval = time_inteval
@@ -175,6 +175,28 @@ class Data_PreProcess_SA:
         users_sentiment = np.array(users_sentiment)
         return users_sentiment
 
+    def SA_Embedding(self,Word2Vec_model,sentiment_embedding_model):    
+        print('Starting building SA_embedding!!')      
+        SA_embedding = []
+        for i in pyprind.prog_bar(range(len(self.xxxxjson_name))):
+            xxxxjson_name_point = self.xxxxjson_name[i]
+            partition_users_text = self.Partition_users_text(xxxxjson_name_point)
+            embedding = []
+            for j in range(len(partition_users_text)):
+                user_text = list(jieba.cut(re.sub('\W', '',''.join(partition_users_text[j]))))
+                remainder = self.Maxlengh_words()-len(user_text)
+                user_textvec = []
+                for k in range(len(user_text)):
+                    user_textvec.append(Word2Vec_model[user_text[k]])
+                for k in range(remainder):
+                    user_textvec.append(Word2Vec_model['SHORTAGE'])
+                embedding.append(user_textvec)
+            embedding = np.array(embedding)
+            SA_embedding.append(sentiment_embedding_model.predict(embedding))
+        SA_embedding = np.array(SA_embedding)
+        print('Ending building SA_embedding!!')        
+        return SA_embedding
+
 
 
 data_preprocess_SA = Data_PreProcess_SA(partition_num,time_inteval,Weibo_path,corpus_path)
@@ -185,11 +207,10 @@ print('End building Word2Vec!!')
 generator_Corpus = data_preprocess_SA.Generator_Corpus()
 maxlengh_words = data_preprocess_SA.Maxlengh_words()
 
-bi_LSTM_model = BI_LSTM_Model(generator_Corpus,maxlengh_words,corpus_path)
-users_sentiment = data_preprocess_SA.Users_sentiment(Word2Vec_model,bi_LSTM_model)
-print(users_sentiment.shape) #(3,2,1)
+bi_LSTM_model,sentiment_embedding_model = BI_LSTM_Model(generator_Corpus,maxlengh_words,corpus_path)
+SA_Y = data_preprocess_SA.Users_sentiment(Word2Vec_model,bi_LSTM_model)  #(3,2,1)  ##
 
-
+SA_embedding = data_preprocess_SA.SA_Embedding(Word2Vec_model,sentiment_embedding_model)  ##(3,2,64)
 
         
         

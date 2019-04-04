@@ -233,16 +233,12 @@ class Data_PreProcess_NV_AU:
 data_preprocess_NV_AU = Data_PreProcess_NV_AU(partition_num,time_inteval,Weibo_path,Weibotxt_path,nodepair_xx_filename,nodevec_xx_filename)
 doc2vec_model = data_preprocess_NV_AU.Doc2Vec_Model()
 dict_users_textvec = data_preprocess_NV_AU.Dict_users_textvec(doc2vec_model)
-author_users_textvec = data_preprocess_NV_AU.Author_users_textvec(doc2vec_model)
+AU_X = data_preprocess_NV_AU.Author_users_textvec(doc2vec_model)  ##(3,3,100)
 data_preprocess_NV_AU.Similarity_top(dict_users_textvec)
 data_preprocess_NV_AU.Node2Vec()
 dict_nodevec = data_preprocess_NV_AU.Dict_nodevec()
-X = data_preprocess_NV_AU.X_Function(dict_nodevec)
-Y = data_preprocess_NV_AU.Y_Funtion()
-
-
-
-
+NV_X = data_preprocess_NV_AU.X_Function(dict_nodevec)   ##(3,2,128)
+NV_AU_Y = data_preprocess_NV_AU.Y_Funtion()   ##(3,)
 
 
 
